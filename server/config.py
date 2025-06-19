@@ -1,0 +1,8 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+THE_NEWS_API_KEY = os.getenv("THE_NEWS_API_KEY")
+# FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
