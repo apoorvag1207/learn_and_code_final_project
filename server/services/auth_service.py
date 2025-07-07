@@ -34,7 +34,7 @@ class AuthService:
             result = cursor.fetchone()
 
             if not result:
-                print("[DEBUG] No user found with this email.")
+                print("No user found with this email.")
                 return {
                     "success": False,
                     "message": "Invalid credentials."
@@ -73,7 +73,7 @@ class AuthService:
             count = cursor.fetchone()[0]
             return count > 0
         except Exception as e:
-            print(f"[AuthService] Email check failed: {e}")
+            print(f" Email check failed: {e}")
             return True  
         finally:
             cursor.close()

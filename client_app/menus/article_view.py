@@ -23,7 +23,6 @@ class ArticleViewMenu:
 
             print(f"\nArticle ID: {article.get('id')}")
             print(f"Title: {article.get('title')}")
-            print(f"Published At: {published_formatted}")
             print(f"{article.get('description')}")
             print(f"Source: {article.get('source')}")
             print(f"URL: {article.get('url')}\n")

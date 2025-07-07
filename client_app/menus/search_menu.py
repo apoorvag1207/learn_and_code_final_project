@@ -4,11 +4,23 @@ from datetime import datetime
 class SearchMenu:
     def __init__(self, user_data):
         self.user_data = user_data
+        
+    
+    
+    def get_valid_date(self,prompt):
+        while True:
+            date_str = input(prompt).strip()
+            try:
+                
+                datetime.strptime(date_str, "%Y-%m-%d")
+                return date_str
+            except ValueError:
+                print(" Invalid date format. Please enter in YYYY-MM-DD format (e.g., 2025-06-15).")
 
     def search(self):
         query = input("Enter search query: ").strip()
-        start_date = input("Enter start date (YYYY-MM-DD) : ").strip()
-        end_date = input("Enter end date (YYYY-MM-DD) : ").strip()
+        start_date = self.get_valid_date("Enter start date (YYYY-MM-DD): ")
+        end_date =self.get_valid_date("Enter end date (YYYY-MM-DD): ")
 
         print(f"\nS E A R C H\nResults for \"{query}\"")
 

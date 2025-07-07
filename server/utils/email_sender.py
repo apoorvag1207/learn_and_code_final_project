@@ -15,17 +15,17 @@ class EmailSender:
 
     def send_email(self, to_email, subject, body):
         try:
-            msg = MIMEMultipart()
-            msg['From'] = self.smtp_user
-            msg['To'] = to_email
-            msg['Subject'] = subject
+            message = MIMEMultipart()
+            message['From'] = self.smtp_user
+            message['To'] = to_email
+            message['Subject'] = subject
 
-            msg.attach(MIMEText(body, 'plain'))
+            message.attach(MIMEText(body, 'plain'))
 
             with smtplib.SMTP(self.smtp_host, self.smtp_port) as server:
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_pass)
-                server.send_message(msg)
+                server.send_message(message)
 
             print(f"[EmailSender] Email sent to {to_email}")
         except Exception as e:

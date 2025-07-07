@@ -59,14 +59,14 @@ def search_articles():
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
     
-    print(f"[DEBUG] Received: query={query}, start_date={start_date}, end_date={end_date}")
+    print(f" Received: query={query}, start_date={start_date}, end_date={end_date}")
     
 
     if not query:
         return jsonify({"error": "Missing search query"}), 400
 
     results = headline_service.search_articles(query, start_date, end_date)
-    print(f"[DEBUG] Result count: {len(results)}")
+    print(f" Result count: {len(results)}")
     return jsonify(results), 200
 
 @user_routes.route("/user/article/feedback", methods=["POST"])

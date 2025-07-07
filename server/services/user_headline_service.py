@@ -5,7 +5,7 @@ class UserHeadlineService:
         self.db = DatabaseConnector()
 
     def get_articles_by_date(self, date, category):
-        print(f"[DEBUG] get_articles_by_date() called with date: {date}, category: {category}")
+        print(f" get_articles_by_date() called with date: {date}, category: {category}")
 
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
@@ -28,22 +28,22 @@ class UserHeadlineService:
             query += " AND LOWER(NewsArticle.Category) = %s"
             params.append(category.lower())
 
-        print(f"[DEBUG] Final SQL Query: {query}")
-        print(f"[DEBUG] Parameters: {params}")
+        print(f"Final SQL Query: {query}")
+        print(f"Parameters: {params}")
 
         cursor.execute(query, params)
         results = cursor.fetchall()
 
-        print(f"[DEBUG] Number of articles fetched: {len(results)}")
+        print(f"Number of articles fetched: {len(results)}")
         for result in results:
-            print(f"[DEBUG] Article ID: {result['id']}, PublishedAt: {result['published_at']}")
+            print(f"Article ID: {result['id']}, PublishedAt: {result['published_at']}")
 
         cursor.close()
         connection.close()
         return results
 
     def get_articles_by_date_range(self, start_date, end_date, category):
-        print(f"[DEBUG] get_articles_by_date_range() called with start: {start_date}, end: {end_date}, category: {category}")
+        print(f"get_articles_by_date_range() called with start: {start_date}, end: {end_date}, category: {category}")
 
         connection = self.db.get_connection()
         cursor = connection.cursor(dictionary=True)
@@ -65,16 +65,12 @@ class UserHeadlineService:
         if category.lower() != "all":
             query += " AND LOWER(NewsArticle.Category) = %s"
             params.append(category.lower())
-
-        print(f"[DEBUG] Final SQL Query: {query}")
-        print(f"[DEBUG] Parameters: {params}")
-
         cursor.execute(query, params)
         results = cursor.fetchall()
 
-        print(f"[DEBUG] Number of articles fetched: {len(results)}")
+        print(f" Number of articles fetched: {len(results)}")
         for result in results:
-            print(f"[DEBUG] Article ID: {result['id']}, PublishedAt: {result['published_at']}")
+            print(f" Article ID: {result['id']}, PublishedAt: {result['published_at']}")
 
         cursor.close()
         connection.close()

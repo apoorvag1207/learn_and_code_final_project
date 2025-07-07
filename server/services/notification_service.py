@@ -51,7 +51,7 @@ class NotificationService:
             config_rows = cursor.fetchall()
 
             if not config_rows:
-                print(f"[DEBUG] No config found for user {user_id}, inserting defaults...")
+                print(f"No config found for user {user_id}, inserting defaults...")
 
                 valid_categories = [
                     "Business", "Technology", "Sports", "Politics", "Health",
@@ -77,7 +77,7 @@ class NotificationService:
                     (user_id,),
                 )
                 config_rows = cursor.fetchall()
-                print(f"[DEBUG] Default config inserted for user {user_id}: {config_rows}")
+                print(f"Default config inserted for user {user_id}: {config_rows}")
 
             cursor.execute("SELECT Word FROM Keyword WHERE UserId = %s", (user_id,))
             keyword_rows = cursor.fetchall()
