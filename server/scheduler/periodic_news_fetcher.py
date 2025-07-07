@@ -6,3 +6,4 @@ class PeriodicNewsFetcher:
 
     def run_once(self):
         self.service.fetch_and_store_all_news()
+        

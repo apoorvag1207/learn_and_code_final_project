@@ -30,13 +30,13 @@ class AdminMenu:
 
     def view_server_status(self):
         response = requests.get("http://localhost:5000/admin/servers/status")
-        for s in response.json():
-            print(f"{s['Name']} - {'Active' if s['IsActive'] else 'Not Active'} - Last accessed: {s['LastAccessed']}")
+        for server in response.json():
+            print(f"{server['Name']} - {'Active' if server['IsActive'] else 'Not Active'} - Last accessed: {server['LastAccessed']}")
 
     def view_server_details(self):
         response = requests.get("http://localhost:5000/admin/servers/details")
-        for s in response.json():
-            print(f"{s['ServerId']}. {s['Name']} - {s['ApiKey']}")
+        for server in response.json():
+            print(f"{server['ServerId']}. {server['Name']} - {server['ApiKey']}")
 
     def update_server_key(self):
         server_id = input("Enter server ID: ")
@@ -48,4 +48,23 @@ class AdminMenu:
         print("Updated successfully!")
 
     def add_category(self):
-        print(" not implemented yet.")
+        category_name = input("Enter new category name: ").strip()
+        if not category_name:
+            print("Category name cannot be empty.")
+            return
+
+        try:
+            response = requests.post(
+                "http://localhost:5000/admin/categories",
+                json={
+                    "name": category_name,
+                    "admin_id": self.user_data["user_id"]
+                }
+            )
+            if response.status_code == 200:
+                print("Category added successfully.")
+            else:
+                print("Failed to add category:", response.json().get("error", "Unknown error"))
+        except Exception as e:
+            print(f"Error: {e}")
+

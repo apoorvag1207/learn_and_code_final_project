@@ -12,8 +12,8 @@ class NewsScheduler:
         # self.scheduler.add_job(
         #     self.service.fetch_and_store_all_news,
         #     'interval',
-        #     seconds=30,  
+        #     seconds=220,  
         #     next_run_time=datetime.now()
         # )
         self.scheduler.start()
-        print("[Scheduler] Started news fetch scheduler.")
+        print("Started news fetch scheduler.")

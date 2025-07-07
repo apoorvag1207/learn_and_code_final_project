@@ -31,5 +31,17 @@ def get_servers_details():
 @admin_routes.route("/admin/servers/update", methods=["PATCH"])
 def update_server_api_key():
     body = request.get_json()
-    AdminService().update_server_key(body["server_id"], body["new_key"])
+    AdminService().update_server_api_key(body["server_id"], body["new_key"])
     return jsonify({"success": True})
+
+@admin_routes.route("/admin/categories", methods=["POST"])
+def add_category():
+    data = request.json
+    try:
+        name = data["name"]
+        admin_id = data["admin_id"]
+        AdminService().add_category(name, admin_id)
+        return jsonify({"message": "Category added successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+

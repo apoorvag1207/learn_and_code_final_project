@@ -20,7 +20,6 @@ class TheNewsAPIClient:
 
     def fetch_news(self):
         try:
-            # url = f"https://api.thenewsapi.com/v1/news/top?api_token={self.api_key}&locale=us"
             url = f"https://api.thenewsapi.com/v1/news/all?api_token={self.api_key}&language=en&limit=10"
             response = requests.get(url)
             response.raise_for_status()

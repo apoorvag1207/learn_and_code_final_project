@@ -40,11 +40,8 @@ class AuthService:
                     "message": "Invalid credentials."
                 }
 
-            print("[DEBUG] Fetched from DB:", result)
+           
             hashed_input_password = self.hash_password(password)
-            print("[DEBUG] Input hashed:", hashed_input_password)
-            print("[DEBUG] Stored hash  :", result[2])
-
             if result[2] == hashed_input_password:
                 return {
                     "success": True,
@@ -66,9 +63,6 @@ class AuthService:
         finally:
             cursor.close()
             conn.close()
-
-
-
             
     def is_email_registered(self, email):
         try:

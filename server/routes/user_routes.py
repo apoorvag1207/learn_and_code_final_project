@@ -56,8 +56,35 @@ def delete_saved_article():
 @user_routes.route("/user/search", methods=["GET"])
 def search_articles():
     query = request.args.get("query")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+    
+    print(f"[DEBUG] Received: query={query}, start_date={start_date}, end_date={end_date}")
+    
+
     if not query:
         return jsonify({"error": "Missing search query"}), 400
 
-    results = headline_service.search_articles(query)
+    results = headline_service.search_articles(query, start_date, end_date)
+    print(f"[DEBUG] Result count: {len(results)}")
     return jsonify(results), 200
+
+@user_routes.route("/user/article/feedback", methods=["POST"])
+def give_article_feedback():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    article_id = data.get("article_id")
+    is_liked = data.get("is_liked")
+
+    service = UserHeadlineService()
+    success = service.give_article_feedback(user_id, article_id, is_liked)
+    return jsonify({"success": success})
+
+
+
+
+
+
+
+
+

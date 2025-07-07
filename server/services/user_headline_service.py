@@ -7,25 +7,25 @@ class UserHeadlineService:
     def get_articles_by_date(self, date, category):
         print(f"[DEBUG] get_articles_by_date() called with date: {date}, category: {category}")
 
-        conn = self.db.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        connection = self.db.get_connection()
+        cursor = connection.cursor(dictionary=True)
 
         query = """
             SELECT 
-                NewsArticleId AS id,
-                Title AS title,
-                Description AS description,
-                Source AS source,
-                URL AS url,
-                PublishedAt AS publishedAt,
-                Category AS category
+                NewsArticle.NewsArticleId AS id,
+                NewsArticle.Title AS title,
+                NewsArticle.Description AS description,
+                NewsArticle.Source AS source,
+                NewsArticle.URL AS url,
+                NewsArticle.PublishedAt AS published_at,
+                NewsArticle.Category AS category
             FROM NewsArticle
-            WHERE DATE(PublishedAt) = %s
+            WHERE DATE(NewsArticle.PublishedAt) = %s
         """
         params = [date]
 
         if category.lower() != "all":
-            query += " AND LOWER(Category) = %s"
+            query += " AND LOWER(NewsArticle.Category) = %s"
             params.append(category.lower())
 
         print(f"[DEBUG] Final SQL Query: {query}")
@@ -35,35 +35,35 @@ class UserHeadlineService:
         results = cursor.fetchall()
 
         print(f"[DEBUG] Number of articles fetched: {len(results)}")
-        for r in results:
-            print(f"[DEBUG] Article ID: {r['id']}, PublishedAt: {r['publishedAt']}")
+        for result in results:
+            print(f"[DEBUG] Article ID: {result['id']}, PublishedAt: {result['published_at']}")
 
         cursor.close()
-        conn.close()
+        connection.close()
         return results
 
-    def get_articles_by_date_range(self, start, end, category):
-        print(f"[DEBUG] get_articles_by_date_range() called with start: {start}, end: {end}, category: {category}")
+    def get_articles_by_date_range(self, start_date, end_date, category):
+        print(f"[DEBUG] get_articles_by_date_range() called with start: {start_date}, end: {end_date}, category: {category}")
 
-        conn = self.db.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        connection = self.db.get_connection()
+        cursor = connection.cursor(dictionary=True)
 
         query = """
             SELECT 
-                NewsArticleId AS id,
-                Title AS title,
-                Description AS description,
-                Source AS source,
-                URL AS url,
-                PublishedAt AS publishedAt,
-                Category AS category
+                NewsArticle.NewsArticleId AS id,
+                NewsArticle.Title AS title,
+                NewsArticle.Description AS description,
+                NewsArticle.Source AS source,
+                NewsArticle.URL AS url,
+                NewsArticle.PublishedAt AS published_at,
+                NewsArticle.Category AS category
             FROM NewsArticle
-            WHERE DATE(PublishedAt) BETWEEN %s AND %s
+            WHERE DATE(NewsArticle.PublishedAt) BETWEEN %s AND %s
         """
-        params = [start, end]
+        params = [start_date, end_date]
 
         if category.lower() != "all":
-            query += " AND LOWER(Category) = %s"
+            query += " AND LOWER(NewsArticle.Category) = %s"
             params.append(category.lower())
 
         print(f"[DEBUG] Final SQL Query: {query}")
@@ -73,67 +73,108 @@ class UserHeadlineService:
         results = cursor.fetchall()
 
         print(f"[DEBUG] Number of articles fetched: {len(results)}")
-        for r in results:
-            print(f"[DEBUG] Article ID: {r['id']}, PublishedAt: {r['publishedAt']}")
+        for result in results:
+            print(f"[DEBUG] Article ID: {result['id']}, PublishedAt: {result['published_at']}")
 
         cursor.close()
-        conn.close()
+        connection.close()
         return results
-    
+
     def get_saved_articles(self, user_id):
-        conn = self.db.get_connection()
-        cursor = conn.cursor(dictionary=True)
+        connection = self.db.get_connection()
+        cursor = connection.cursor(dictionary=True)
+
         query = """
-            SELECT sa.SavedArticleId AS id, na.Title AS title, na.Description AS description,
-                   na.Source AS source, na.URL AS url, na.Category AS category, na.PublishedAt AS publishedAt
-            FROM SavedArticle sa
-            JOIN NewsArticle na ON sa.NewsArticleId = na.NewsArticleId
-            WHERE sa.UserId = %s
+            SELECT 
+                SavedArticle.SavedArticleId AS id,
+                NewsArticle.Title AS title,
+                NewsArticle.Description AS description,
+                NewsArticle.Source AS source,
+                NewsArticle.URL AS url,
+                NewsArticle.Category AS category,
+                NewsArticle.PublishedAt AS published_at
+            FROM SavedArticle
+            JOIN NewsArticle ON SavedArticle.NewsArticleId = NewsArticle.NewsArticleId
+            WHERE SavedArticle.UserId = %s
         """
         cursor.execute(query, (user_id,))
         results = cursor.fetchall()
+
         cursor.close()
-        conn.close()
+        connection.close()
         return results
 
     def delete_saved_article(self, user_id, article_id):
         try:
-            conn = self.db.get_connection()
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM SavedArticle WHERE UserId = %s AND SavedArticleId = %s", (user_id, article_id))
-            conn.commit()
+            connection = self.db.get_connection()
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM SavedArticle WHERE UserId = %s AND SavedArticleId = %s",
+                (user_id, article_id)
+            )
+            connection.commit()
             return cursor.rowcount > 0
-        except:
+        except Exception as e:
+            print(f"[ERROR] Failed to delete saved article: {e}")
+            return False
+        finally:
+            cursor.close()
+            connection.close()
+
+    def search_articles(self, search_query, start_date=None, end_date=None):
+        connection = self.db.get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        try:
+            sql = """
+                SELECT 
+                    n.NewsArticleId AS id,
+                    n.Title AS title,
+                    n.Description AS description,
+                    n.Source AS source,
+                    n.URL AS url,
+                    n.Category AS category,
+                    n.PublishedAt AS published_at,
+                    COALESCE(SUM(CASE WHEN af.IsLiked = 1 THEN 1 ELSE 0 END), 0) AS likes,
+                    COALESCE(SUM(CASE WHEN af.IsLiked = 0 THEN 1 ELSE 0 END), 0) AS dislikes
+                FROM NewsArticle n
+                LEFT JOIN ArticleFeedback af ON n.NewsArticleId = af.NewsArticleId
+                WHERE n.Title LIKE %s OR n.Description LIKE %s
+            """
+            params = [f"%{search_query}%", f"%{search_query}%"]
+
+            if start_date and end_date:
+                sql += " AND DATE(n.PublishedAt) BETWEEN %s AND %s"
+                params.extend([start_date, end_date])
+
+            sql += """
+                GROUP BY n.NewsArticleId
+                ORDER BY likes DESC, dislikes ASC, n.PublishedAt DESC
+            """
+
+            cursor.execute(sql, tuple(params))
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            connection.close()
+
+            
+    def give_article_feedback(self, user_id, article_id, is_liked):
+        conn = self.db.get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO ArticleFeedback (UserId, NewsArticleId, IsLiked)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE IsLiked = VALUES(IsLiked), FeedbackAt = NOW()
+            """, (user_id, article_id, is_liked))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"[ERROR] Feedback failed: {e}")
             return False
         finally:
             cursor.close()
             conn.close()
-    
-    def search_articles(self, query):
-        print(f"[DEBUG] search_articles() called with query: {query}")
-        conn = self.db.get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        sql = """
-            SELECT 
-                NewsArticleId AS id,
-                Title AS title,
-                Description AS description,
-                Source AS source,
-                URL AS url,
-                PublishedAt AS publishedAt,
-                Category AS category
-            FROM NewsArticle
-            WHERE Title LIKE %s OR Description LIKE %s
-        """
-        like_query = f"%{query}%"
-        cursor.execute(sql, (like_query, like_query))
-        results = cursor.fetchall()
-
-        print(f"[DEBUG] Number of search results: {len(results)}")
-
-        cursor.close()
-        conn.close()
-        return results
 
 

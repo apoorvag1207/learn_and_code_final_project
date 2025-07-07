@@ -2,7 +2,7 @@ from menus.headline_menu import HeadlineMenu
 from utils.session import SessionManager
 from menus.saved_articles_menu import SavedArticlesMenu
 from menus.search_menu import SearchMenu
-
+from menus.notification_menu import NotificationsMenu
 
 class UserMenu:
     def __init__(self, user_data):
@@ -27,6 +27,8 @@ class UserMenu:
                 SavedArticlesMenu(self.user_data).show_saved_articles()
             elif choice == "3":
                 SearchMenu(self.user_data).search()
+            elif choice == "4":
+                NotificationsMenu(self.user_data).show_notifications_menu()
             elif choice == "5":
                 print("Logging out...")
                 break

@@ -6,28 +6,32 @@ class SearchMenu:
         self.user_data = user_data
 
     def search(self):
-        query = input("Enter search query: ")
+        query = input("Enter search query: ").strip()
+        start_date = input("Enter start date (YYYY-MM-DD) : ").strip()
+        end_date = input("Enter end date (YYYY-MM-DD) : ").strip()
+
         print(f"\nS E A R C H\nResults for \"{query}\"")
 
-        articles = NewsClient().search_articles(query)
+        articles = NewsClient().search_articles(query, start_date, end_date)
         if not articles:
             print("No results found.")
             return
 
         for article in articles:
-            published_str = article.get('publishedAt')
+            published_string = article.get('publishedAt')
             try:
-                published_dt = datetime.strptime(published_str, "%Y-%m-%d %H:%M:%S")
+                published_dt = datetime.strptime(published_string, "%Y-%m-%d %H:%M:%S")
                 published_formatted = published_dt.strftime("%d-%b-%Y %I:%M %p")
             except:
-                published_formatted = published_str
+                published_formatted = published_string
 
             print(f"\nArticle ID: {article.get('id')}")
-            print(f"{article.get('title')}")
-            print(f"{article.get('description')}")
-            print(f"source : {article.get('source')}")
+            print(f"Title: {article.get('title')}")
+            print(f"Description: {article.get('description')}")
+            print(f"Source: {article.get('source')}")
             print(f"URL: {article.get('url')}")
-            print(f"{article.get('category').capitalize()}: {article.get('category')}")
+            print(f"Category: {article.get('category').capitalize()}")
+            print(f" Likes: {article.get('likes', 0)}    Dislikes: {article.get('dislikes', 0)}")
 
         while True:
             print("\n1. Back\n2. Logout\n3. Save Article")

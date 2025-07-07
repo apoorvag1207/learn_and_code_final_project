@@ -1,8 +1,6 @@
 from db_connection import DatabaseConnector
 from datetime import datetime
 
-
-
 class AdminService:
     def __init__(self):
         self.db = DatabaseConnector()
@@ -29,7 +27,7 @@ class AdminService:
         conn = self.db.get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE ExternalServer SET ApiKey = %s WHERE ServerId = %s",
+            "UPDATE ExternalServer SET ApiKey = %s WHERE ExternalId = %s",
             (new_key, server_id)
         )
         conn.commit()
@@ -42,7 +40,7 @@ class AdminService:
         conn = self.db.get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO AdminDefinedCategory (Name, CreatedBy) VALUES (%s, %s)",
+            "INSERT INTO AdminDefinedCategory (CategoryName, Created_By) VALUES (%s, %s)",
             (category_name, created_by)
         )
         conn.commit()

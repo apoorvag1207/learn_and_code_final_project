@@ -1,7 +1,6 @@
 from auth.login import LoginHandler
 from auth.signup import SignUpHandler
-from menus.user_menu import UserMenu
-from menus.admin_menu import AdminMenu
+
 
 class NewsAggregatorClientApp:
     def __init__(self):
@@ -34,9 +33,12 @@ class NewsAggregatorClientApp:
 
             
             if role == "Admin":
+                from menus.admin_menu import AdminMenu
                 AdminMenu(user_data).show_admin_menu()
             else:
+                from menus.user_menu import UserMenu
                 UserMenu(user_data).show_user_menu()
+                
 
 if __name__ == "__main__":
     app = NewsAggregatorClientApp()

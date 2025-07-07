@@ -14,12 +14,12 @@ class SavedArticlesMenu:
             return
 
         for article in articles:
-            published_str = article.get("publishedAt")
+            published_string = article.get("publishedAt")
             try:
-                dt = datetime.strptime(published_str, "%Y-%m-%d %H:%M:%S")
-                published_formatted = dt.strftime("%d-%b-%Y %I:%M %p")
+                date = datetime.strptime(published_string, "%Y-%m-%d %H:%M:%S")
+                published_formatted = date.strftime("%d-%b-%Y %I:%M %p")
             except:
-                published_formatted = published_str
+                published_formatted = published_string
 
             print(f"\nArticle Id: {article.get('id')} {article.get('title')}")
             print(article.get("description"))
