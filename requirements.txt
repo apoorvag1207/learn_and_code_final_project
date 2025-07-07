@@ -1,0 +1,7 @@
+mysql-connector-python
+python-dotenv
+requests
+apscheduler
+flask
+pytest
+pytest-mock
